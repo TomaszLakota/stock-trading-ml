@@ -12,7 +12,7 @@ from util import csv_to_dataset, history_points
 
 ###set my settings
 LOAD_MODEL_FROM_FILE = True
-MODEL_FILE_NAME = "model3w.h5"
+MODEL_FILE_NAME = "model2w.h5"
 
 
 
@@ -92,5 +92,5 @@ plt.legend(['Real', 'Predicted'])
 
 plt.show()
 
-model.save("modela.h5")
+model.save("model2w.h5")
 print("saved")
