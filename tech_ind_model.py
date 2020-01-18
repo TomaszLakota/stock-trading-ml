@@ -12,9 +12,9 @@ from util import csv_to_dataset, history_points
 
 # dataset
 
-ohlcv_histories, technical_indicators, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('MSFT_daily.csv')
+ohlcv_histories, technical_indicators, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('BTC-USD.csv')
 
-test_split = 0.9
+test_split = 0.7
 n = int(ohlcv_histories.shape[0] * test_split)
 
 ohlcv_train = ohlcv_histories[:n]
@@ -59,7 +59,7 @@ z = Dense(1, activation="linear", name='dense_out')(z)
 model = Model(inputs=[lstm_branch.input, technical_indicators_branch.input], outputs=z)
 adam = optimizers.Adam(lr=0.0005)
 model.compile(optimizer=adam, loss='mse')
-model.fit(x=[ohlcv_train, tech_ind_train], y=y_train, batch_size=32, epochs=50, shuffle=True, validation_split=0.1)
+model.fit(x=[ohlcv_train, tech_ind_train], y=y_train, batch_size=32, epochs=500, shuffle=True, validation_split=0.3)
 
 
 # evaluation
@@ -71,7 +71,7 @@ y_predicted = y_normaliser.inverse_transform(y_predicted)
 assert unscaled_y_test.shape == y_test_predicted.shape
 real_mse = np.mean(np.square(unscaled_y_test - y_test_predicted))
 scaled_mse = real_mse / (np.max(unscaled_y_test) - np.min(unscaled_y_test)) * 100
-print(scaled_mse)
+print(real_mse, scaled_mse)
 
 import matplotlib.pyplot as plt
 

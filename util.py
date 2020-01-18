@@ -7,7 +7,8 @@ history_points = 50
 
 def csv_to_dataset(csv_path):
     data = pd.read_csv(csv_path)
-    data = data.drop('date', axis=1)
+    data = data.drop('Date', axis=1)
+    data = data.iloc[:, :-1] #drop MarketCap
     data = data.drop(0, axis=0)
 
     data = data.values
@@ -39,8 +40,8 @@ def csv_to_dataset(csv_path):
     technical_indicators = []
     for his in ohlcv_histories_normalised:
         # note since we are using his[3] we are taking the SMA of the closing price
-        sma = np.mean(his[:, 3])
-        macd = calc_ema(his, 12) - calc_ema(his, 26)
+        sma = np.mean(his[:, 3]) - np.mean(his[:, 3]) # ########################################## removed indicator
+        macd = calc_ema(his, 12) - calc_ema(his, 12) # ########################################### removed indicator 26 -> 12
         technical_indicators.append(np.array([sma]))
         # technical_indicators.append(np.array([sma,macd,]))
 

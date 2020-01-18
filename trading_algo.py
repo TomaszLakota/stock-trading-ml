@@ -4,9 +4,9 @@ from util import csv_to_dataset, history_points
 
 model = load_model('technical_model.h5')
 
-ohlcv_histories, technical_indicators, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('MSFT_daily.csv')
+ohlcv_histories, technical_indicators, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('BTC-USD.csv')
 
-test_split = 0.9
+test_split = 0.7
 n = int(ohlcv_histories.shape[0] * test_split)
 
 ohlcv_train = ohlcv_histories[:n]
