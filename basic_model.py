@@ -12,7 +12,7 @@ from util import csv_to_dataset, history_points
 
 ###set my settings
 LOAD_MODEL_FROM_FILE = True
-MODEL_FILE_NAME = "model2w.h5"
+MODEL_FILE_NAME = "model4v1.h5"
 
 
 
@@ -47,8 +47,8 @@ else:
     x = Dropout(0.2, name='lstm_dropout_0')(x)
     x = LSTM(50, name='lstm_0')(lstm_input)
     x = Dropout(0.2, name='lstm_dropout_0')(x)
-    x = LSTM(50, name='lstm_0')(lstm_input)
-    x = Dropout(0.2, name='lstm_dropout_0')(x)
+    # x = LSTM(50, name='lstm_0')(lstm_input)
+    # x = Dropout(0.2, name='lstm_dropout_0')(x)
     x = Dense(64, name='dense_0')(x)
     x = Activation('sigmoid', name='sigmoid_0')(x)
     x = Dense(1, name='dense_1')(x)
@@ -57,11 +57,13 @@ else:
 
 adam = optimizers.Adam(lr=0.0005)
 model.compile(optimizer=adam, loss='mse')
-filepath = "weights-improvement-{epoch:02d}-{val_accuracy:.2f}.hdf5"
-checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
-# callbacks_list = [checkpoint]
-# TB = TensorBoard(histogram_freq=1, batch_size=32)
-model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=1, shuffle=True, validation_split=0.2, verbose=1)
+
+filepath = "weights-improvement-{epoch:02d}.hdf5"
+checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
+TB = TensorBoard(histogram_freq=1, batch_size=32)
+callbacks_list = [checkpoint, TB]
+
+model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=5, shuffle=True, validation_split=0.2, verbose=0,callbacks=callbacks_list)
 
 ###################################################### evaluation
 
@@ -74,6 +76,7 @@ assert unscaled_y_test.shape == y_test_predicted.shape
 real_mse = np.mean(np.square(unscaled_y_test - y_test_predicted))
 scaled_mse = real_mse / (np.max(unscaled_y_test) - np.min(unscaled_y_test)) * 100
 print(scaled_mse)
+print(real_mse)
 
 
 
@@ -92,5 +95,5 @@ plt.legend(['Real', 'Predicted'])
 
 plt.show()
 
-model.save("model2w.h5")
+model.save("model4v2.h5")
 print("saved")
