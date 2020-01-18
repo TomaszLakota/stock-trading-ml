@@ -11,7 +11,8 @@ set_random_seed(4)
 from util import csv_to_dataset, history_points
 
 ###set my settings
-LOAD_MODEL_FROM_FILE = False
+LOAD_MODEL_FROM_FILE = True
+MODEL_FILE_NAME = "model3w.h5"
 
 
 
@@ -38,7 +39,7 @@ print(ohlcv_histories[0][0])
 ######################################################
 
 if LOAD_MODEL_FROM_FILE:
-    model = load_model('model.h5')
+    model = load_model(MODEL_FILE_NAME)
     model.summary()
 else:
     lstm_input = Input(shape=(history_points, 2), name='lstm_input')
@@ -60,7 +61,7 @@ filepath = "weights-improvement-{epoch:02d}-{val_accuracy:.2f}.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
 # callbacks_list = [checkpoint]
 # TB = TensorBoard(histogram_freq=1, batch_size=32)
-model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=10, shuffle=True, validation_split=0.2, verbose=1)
+model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=1, shuffle=True, validation_split=0.2, verbose=1)
 
 ###################################################### evaluation
 
