@@ -12,7 +12,7 @@ from util import csv_to_dataset, history_points
 
 # dataset
 
-ohlcv_histories, technical_indicators, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('BTC-USD.csv')
+ohlcv_histories, technical_indicators, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('my.csv')
 
 test_split = 0.7
 n = int(ohlcv_histories.shape[0] * test_split)
@@ -34,7 +34,7 @@ print(ohlcv_test.shape)
 # model architecture
 
 # define two sets of inputs
-lstm_input = Input(shape=(history_points, 5), name='lstm_input')
+lstm_input = Input(shape=(history_points, 1), name='lstm_input')
 dense_input = Input(shape=(technical_indicators.shape[1],), name='tech_input')
 
 # the first branch operates on the first input

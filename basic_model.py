@@ -1,19 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
 from keras import optimizers
+from keras.callbacks import ModelCheckpoint, TensorBoard
+from keras.engine.saving import load_model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation
 from keras.models import Model
-
 np.random.seed(4)
 from tensorflow import set_random_seed
-
 set_random_seed(4)
 from util import csv_to_dataset, history_points
 
-# dataset
+###set my settings
+LOAD_MODEL_FROM_FILE = False
 
-ohlcv_histories, _, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('BTC-USD.csv')
+
+
+# dataset
+# ohlcv_histories, _, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('my.csv')
+ohlcv_histories, _, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('my.csv')
 
 test_split = 0.7
 n = int(ohlcv_histories.shape[0] * test_split)
@@ -28,23 +32,37 @@ unscaled_y_test = unscaled_y[n:]
 
 print(ohlcv_train.shape)
 print(ohlcv_test.shape)
+print(ohlcv_histories.shape)
+print(ohlcv_histories[0][0])
 
-# model architecture
+######################################################
 
-lstm_input = Input(shape=(history_points, 5), name='lstm_input')
-x = LSTM(50, name='lstm_0')(lstm_input)
-x = Dropout(0.2, name='lstm_dropout_0')(x)
-x = Dense(64, name='dense_0')(x)
-x = Activation('sigmoid', name='sigmoid_0')(x)
-x = Dense(1, name='dense_1')(x)
-output = Activation('linear', name='linear_output')(x)
+if LOAD_MODEL_FROM_FILE:
+    model = load_model('model.h5')
+    model.summary()
+else:
+    lstm_input = Input(shape=(history_points, 2), name='lstm_input')
+    x = LSTM(50, name='lstm_0')(lstm_input)
+    x = Dropout(0.2, name='lstm_dropout_0')(x)
+    x = LSTM(50, name='lstm_0')(lstm_input)
+    x = Dropout(0.2, name='lstm_dropout_0')(x)
+    # x = LSTM(50, name='lstm_0')(lstm_input)
+    # x = Dropout(0.2, name='lstm_dropout_0')(x)
+    x = Dense(64, name='dense_0')(x)
+    x = Activation('sigmoid', name='sigmoid_0')(x)
+    x = Dense(1, name='dense_1')(x)
+    output = Activation('linear', name='linear_output')(x)
+    model = Model(inputs=lstm_input, outputs=output)
 
-model = Model(inputs=lstm_input, outputs=output)
 adam = optimizers.Adam(lr=0.0005)
 model.compile(optimizer=adam, loss='mse')
-model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=50, shuffle=True, validation_split=0.1)
+filepath = "weights-improvement-{epoch:02d}-{val_accuracy:.2f}.hdf5"
+checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
+# callbacks_list = [checkpoint]
+# TB = TensorBoard(histogram_freq=1, batch_size=32)
+model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=20, shuffle=True, validation_split=0.2, verbose=1)
 
-# evaluation
+###################################################### evaluation
 
 y_test_predicted = model.predict(ohlcv_test)
 y_test_predicted = y_normaliser.inverse_transform(y_test_predicted)
@@ -73,4 +91,5 @@ plt.legend(['Real', 'Predicted'])
 
 plt.show()
 
-model.save(f'basic_model.h5')
+model.save("modela.h5")
+print("saved")

@@ -7,8 +7,8 @@ history_points = 50
 
 def csv_to_dataset(csv_path):
     data = pd.read_csv(csv_path)
-    data = data.drop('Date', axis=1)
-    data = data.iloc[:, :-1] #drop MarketCap
+    data = data.drop('time', axis=1)
+    data = data.iloc[:, :-1] #drop last column
     data = data.drop(0, axis=0)
 
     data = data.values
@@ -29,7 +29,7 @@ def csv_to_dataset(csv_path):
 
     def calc_ema(values, time_period):
         # https://www.investopedia.com/ask/answers/122314/what-exponential-moving-average-ema-formula-and-how-ema-calculated.asp
-        sma = np.mean(values[:, 3])
+        sma = np.mean(values[:, 0])
         ema_values = [sma]
         k = 2 / (1 + time_period)
         for i in range(len(his) - time_period, len(his)):
@@ -40,8 +40,8 @@ def csv_to_dataset(csv_path):
     technical_indicators = []
     for his in ohlcv_histories_normalised:
         # note since we are using his[3] we are taking the SMA of the closing price
-        sma = np.mean(his[:, 3]) - np.mean(his[:, 3]) # ########################################## removed indicator
-        macd = calc_ema(his, 12) - calc_ema(his, 12) # ########################################### removed indicator 26 -> 12
+        sma = np.mean(his[:, 0]) - np.mean(his[:, 0]) # ########################################## removed indicator
+        #macd = calc_ema(his, 4) - calc_ema(his, 4) # ########################################### removed indicator 26 -> 12
         technical_indicators.append(np.array([sma]))
         # technical_indicators.append(np.array([sma,macd,]))
 
