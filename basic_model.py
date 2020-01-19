@@ -14,8 +14,8 @@ from util import csv_to_dataset, history_points
 
 ###set my settings
 LOAD_MODEL_FROM_FILE = True
-MODEL_LOAD_NAME = "model4v7.h5"
-MODEL_SAVE_NAME = "model4v8.h5"
+MODEL_LOAD_NAME = "model4v8.h5"
+MODEL_SAVE_NAME = "model4v9.h5"
 
 
 
@@ -66,7 +66,7 @@ checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only
 TB = TensorBoard(histogram_freq=1, batch_size=32)
 callbacks_list = [checkpoint, TB]
 
-model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=5, shuffle=True, validation_split=0.2, verbose=0,callbacks=callbacks_list)
+model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=10, shuffle=True, validation_split=0.2, verbose=0,callbacks=callbacks_list)
 
 ###################################################### evaluation
 
@@ -100,3 +100,4 @@ print("saved")
 plt.gcf().set_size_inches(11, 5, forward=True)
 plt.legend(['Real', 'Predicted'])
 plt.show()
+
