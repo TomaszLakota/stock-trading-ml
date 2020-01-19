@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import matplotlib.pyplot as plt
 from keras import optimizers
@@ -12,7 +14,8 @@ from util import csv_to_dataset, history_points
 
 ###set my settings
 LOAD_MODEL_FROM_FILE = True
-MODEL_FILE_NAME = "model4v1.h5"
+MODEL_LOAD_NAME = "model4v7.h5"
+MODEL_SAVE_NAME = "model4v8.h5"
 
 
 
@@ -39,7 +42,7 @@ print(ohlcv_histories[0][0])
 ######################################################
 
 if LOAD_MODEL_FROM_FILE:
-    model = load_model(MODEL_FILE_NAME)
+    model = load_model(MODEL_LOAD_NAME)
     model.summary()
 else:
     lstm_input = Input(shape=(history_points, 2), name='lstm_input')
@@ -58,7 +61,7 @@ else:
 adam = optimizers.Adam(lr=0.0005)
 model.compile(optimizer=adam, loss='mse')
 
-filepath = "weights-improvement-{epoch:02d}.hdf5"
+filepath = "weights/"+MODEL_LOAD_NAME+"weights-improvement-{epoch:02d}.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
 TB = TensorBoard(histogram_freq=1, batch_size=32)
 callbacks_list = [checkpoint, TB]
@@ -80,7 +83,7 @@ print(real_mse)
 
 
 
-plt.gcf().set_size_inches(22, 15, forward=True)
+
 
 start = 0
 end = -1
@@ -91,9 +94,9 @@ pred = plt.plot(y_test_predicted[start:end], label='predicted')
 # real = plt.plot(unscaled_y[start:end], label='real')
 # pred = plt.plot(y_predicted[start:end], label='predicted')
 
-plt.legend(['Real', 'Predicted'])
-
-plt.show()
-
-model.save("model4v2.h5")
+model.save(MODEL_SAVE_NAME)
 print("saved")
+
+plt.gcf().set_size_inches(11, 5, forward=True)
+plt.legend(['Real', 'Predicted'])
+plt.show()
