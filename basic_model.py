@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from keras import optimizers
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.engine.saving import load_model
-from keras.layers import Dense, Dropout, LSTM, Input, Activation
+from keras.layers import Dense, Dropout, LSTM, Input, Activation, BatchNormalization
 from keras.models import Model
 np.random.seed(4)
 from tensorflow import set_random_seed
@@ -14,8 +14,9 @@ from util import csv_to_dataset, history_points
 
 ###set my settings
 LOAD_MODEL_FROM_FILE = True
-MODEL_LOAD_NAME = "model4v8.h5"
-MODEL_SAVE_NAME = "model4v9.h5"
+MODEL_LOAD_NAME = "model_batch_norm_v2_v3.h5"
+MODEL_SAVE_NAME = "model_batch_norm_v2_v4.h5"
+EPOCHS = 11
 
 
 
@@ -43,13 +44,15 @@ print(ohlcv_histories[0][0])
 
 if LOAD_MODEL_FROM_FILE:
     model = load_model(MODEL_LOAD_NAME)
-    model.summary()
 else:
     lstm_input = Input(shape=(history_points, 2), name='lstm_input')
+
     x = LSTM(50, name='lstm_0')(lstm_input)
     x = Dropout(0.2, name='lstm_dropout_0')(x)
     x = LSTM(50, name='lstm_0')(lstm_input)
+    x = BatchNormalization()(x)
     x = Dropout(0.2, name='lstm_dropout_0')(x)
+    x = BatchNormalization()(x)
     # x = LSTM(50, name='lstm_0')(lstm_input)
     # x = Dropout(0.2, name='lstm_dropout_0')(x)
     x = Dense(64, name='dense_0')(x)
@@ -58,7 +61,8 @@ else:
     output = Activation('linear', name='linear_output')(x)
     model = Model(inputs=lstm_input, outputs=output)
 
-adam = optimizers.Adam(lr=0.0005)
+model.summary()
+adam = optimizers.Adam(lr=0.0005) # 0005
 model.compile(optimizer=adam, loss='mse')
 
 filepath = "weights/"+MODEL_LOAD_NAME+"weights-improvement-{epoch:02d}.hdf5"
@@ -66,7 +70,7 @@ checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only
 TB = TensorBoard(histogram_freq=1, batch_size=32)
 callbacks_list = [checkpoint, TB]
 
-model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=10, shuffle=True, validation_split=0.2, verbose=0,callbacks=callbacks_list)
+model.fit(x=ohlcv_train, y=y_train, batch_size=32, epochs=EPOCHS, shuffle=True, validation_split=0.2, verbose=0,callbacks=callbacks_list)
 
 ###################################################### evaluation
 
