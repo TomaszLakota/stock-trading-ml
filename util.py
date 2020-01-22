@@ -8,7 +8,9 @@ history_points = 50
 def csv_to_dataset(csv_path):
     data = pd.read_csv(csv_path)
     data = data.drop('time', axis=1)
-    data = data.iloc[:, :-1] #drop last column
+    # data = data.drop('bxbt', axis=1)
+    # data = data.drop('pi', axis=1)
+    data = data.iloc[:, :-1] #drop last column = timestamp
     data = data.drop(0, axis=0)
 
     data = data.values
