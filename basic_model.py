@@ -1,30 +1,25 @@
-import os
-
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.pyplot as plt2
 from keras import optimizers
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.engine.saving import load_model
 from keras.layers import Dense, Dropout, LSTM, Input, Activation, BatchNormalization
 from keras.models import Model
-np.random.seed(4)
-from tensorflow import set_random_seed
-set_random_seed(4)
 from util import csv_to_dataset, history_points
 
 ###set my settings
 LOAD_MODEL_FROM_FILE = False
 MODEL_LOAD_NAME = "tmp.h5"
 MODEL_SAVE_NAME = "tmp1.h5"
-EPOCHS = 11
+EPOCHS = 1
 
 
 
 # dataset
-ohlcv_histories, _, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('my.csv')
+ohlcv_histories, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('my.csv')
 
-prediction = 11
+
+prediction = 111
 ohlcv_histories = ohlcv_histories[:-prediction]
 next_day_open_values = next_day_open_values[prediction:]
 
@@ -92,17 +87,12 @@ model.save(MODEL_SAVE_NAME)
 print("saved")
 
 
-
+# display graphs
 start = 0
 end = -1
 
 real = plt.plot(unscaled_y_test[start:end], label='real')
 pred = plt.plot(y_test_predicted[start:end], label='predicted')
-
-
-
-# real = plt.plot(unscaled_y[start:end], label='real')
-# pred = plt.plot(y_predicted[start:end], label='predicted')
 
 plt.gcf().set_size_inches(11, 5, forward=True)
 plt.legend(['Real', 'Predicted'])
