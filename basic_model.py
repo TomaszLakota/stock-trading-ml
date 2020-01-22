@@ -13,10 +13,10 @@ set_random_seed(4)
 from util import csv_to_dataset, history_points
 
 ###set my settings
-LOAD_MODEL_FROM_FILE = True
-MODEL_LOAD_NAME = "model_batch_norm_v2_v3.h5"
-MODEL_SAVE_NAME = "model_batch_norm_v2_v4.h5"
-EPOCHS = 11
+LOAD_MODEL_FROM_FILE = False
+MODEL_LOAD_NAME = "model_full_data_v3_1.h5"
+MODEL_SAVE_NAME = "model_full_data_v3_1.h5"
+EPOCHS = 5
 
 
 
@@ -45,14 +45,14 @@ print(ohlcv_histories[0][0])
 if LOAD_MODEL_FROM_FILE:
     model = load_model(MODEL_LOAD_NAME)
 else:
-    lstm_input = Input(shape=(history_points, 2), name='lstm_input')
+    lstm_input = Input(shape=(history_points, 4), name='lstm_input')
 
     x = LSTM(50, name='lstm_0')(lstm_input)
     x = Dropout(0.2, name='lstm_dropout_0')(x)
     x = LSTM(50, name='lstm_0')(lstm_input)
-    x = BatchNormalization()(x)
+    # x = BatchNormalization()(x)
     x = Dropout(0.2, name='lstm_dropout_0')(x)
-    x = BatchNormalization()(x)
+    # x = BatchNormalization()(x)
     # x = LSTM(50, name='lstm_0')(lstm_input)
     # x = Dropout(0.2, name='lstm_dropout_0')(x)
     x = Dense(64, name='dense_0')(x)

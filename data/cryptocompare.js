@@ -22,25 +22,43 @@ var ccxt = require("ccxt");
         try {
             // let data = await exchange.fetchOHLCV(symbol, "1h", ts, 1000);
             let data = await fetch(
-                `https://www.bitmex.com/api/v1/trade/bucketed?binSize=5m&partial=false&symbol=XBTUSD&count=1000&reverse=false&startTime=${ts}`
+                `https://www.bitmex.com/api/v1/trade/bucketed?binSize=1h&partial=false&symbol=XBTUSD&count=1000&reverse=false&startTime=${ts}`
             );
             data = await data.json();
-            // console.log(data);
+            data.shift();
+            await new Promise(r => setTimeout(r, 1500));
+
+            let data2 = await fetch(
+                `https://www.bitmex.com/api/v1/trade/bucketed?binSize=1h&partial=false&symbol=.BXBT&count=1000&reverse=false&startTime=${ts}`
+            );
+            data2 = await data2.json();
+            data2.shift();
+            await new Promise(r => setTimeout(r, 1500));
+
+            let data3 = await fetch(
+                `https://www.bitmex.com/api/v1/trade/bucketed?binSize=1h&partial=false&symbol=.XBTUSDPI&count=1000&reverse=false&startTime=${ts}`
+            );
+            data3 = await data3.json();
+            data3.shift();
+
+            // console.log(data3);
             let new_ts = data.slice(-1).pop().timestamp;
+            console.log(new_ts);
             if (new_ts != ts) {
                 // let formated_data = data.map(el => {
                 //     return [el[0], el[4], el[5]];
                 // });
                 // all_data.push(...formated_data);
 
-                let formated_data = data.map(el => {
-                    return { ...el, ...{ time: Date.parse(el.timestamp) } };
+                let formated_data = data.map((el, i) => {
+                    return { ...el, time: Date.parse(el.timestamp), bxbt: data2[i].close, pi: data3[i].close };
                 });
                 all_data.push(...formated_data);
             }
             prev_ts = ts;
             ts = new_ts;
             console.log(ts);
+            // break;
             await new Promise(r => setTimeout(r, 1500));
         } catch (err) {
             console.log(err);
@@ -48,20 +66,22 @@ var ccxt = require("ccxt");
         }
     }
 
-    // console.log(all_data);
+    console.log(all_data);
 
     let columns = {
         timestamp: "time",
         close: "close",
         volume: "volume",
+        bxbt: "bxbt",
+        pi: "pi",
         time: "timestamp"
     };
 
     stringify(all_data, { header: true, columns: columns }, (err, output) => {
         if (err) throw err;
-        fs.writeFile("my.csv", output, err => {
+        fs.writeFile("1h-full-data-index.csv", output, err => {
             if (err) throw err;
-            console.log("my.csv saved.");
+            console.log("1h-full-data-index.csv saved.");
         });
     });
 })();
