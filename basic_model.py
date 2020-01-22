@@ -49,7 +49,7 @@ else:
 
     x = LSTM(50, name='lstm_0')(lstm_input)
     x = Dropout(0.2, name='lstm_dropout_0')(x)
-    x = LSTM(50, name='lstm_0')(lstm_input)
+    x = LSTM(50, name='lstm_0')(x)
     # x = BatchNormalization()(x)
     x = Dropout(0.2, name='lstm_dropout_0')(x)
     # x = BatchNormalization()(x)
