@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt2
 from keras import optimizers
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.engine.saving import load_model
@@ -14,9 +15,9 @@ from util import csv_to_dataset, history_points
 
 ###set my settings
 LOAD_MODEL_FROM_FILE = False
-MODEL_LOAD_NAME = "model_full_data_v3_1.h5"
-MODEL_SAVE_NAME = "model_full_data_v3_1.h5"
-EPOCHS = 5
+MODEL_LOAD_NAME = "model_full_data_v3_v2_1.h5"
+MODEL_SAVE_NAME = "model_full_data_v3_v2_1.h5"
+EPOCHS = 10
 
 
 
@@ -47,16 +48,17 @@ if LOAD_MODEL_FROM_FILE:
 else:
     lstm_input = Input(shape=(history_points, 4), name='lstm_input')
 
-    x = LSTM(50, name='lstm_0',return_sequences=True)(lstm_input)
-    x = Dropout(0.2, name='lstm_dropout_0')(x)
-    x = LSTM(50, name='lstm_1' )(x)
+    x = LSTM(50, name='lstm_0',return_sequences=True, dropout=0.2)(lstm_input)
+    # x = Dropout(0.2, name='lstm_dropout_0')(x)
+    x = BatchNormalization()(x)
+    x = LSTM(50, name='lstm_1', dropout=0.2)(x)
 
-    # x = BatchNormalization()(x)
-    x = Dropout(0.2, name='lstm_dropout_1')(x)
+
+    # x = Dropout(0.2, name='lstm_dropout_1')(x)
     # x = BatchNormalization()(x)
     # x = LSTM(50, name='lstm_0')(lstm_input)
     # x = Dropout(0.2, name='lstm_dropout_0')(x)
-    x = Dense(64, name='dense_0')(x)
+    x = Dense(50, name='dense_0')(x)
     x = Activation('sigmoid', name='sigmoid_0')(x)
     x = Dense(1, name='dense_1')(x)
     output = Activation('linear', name='linear_output')(x)
@@ -86,7 +88,8 @@ scaled_mse = real_mse / (np.max(unscaled_y_test) - np.min(unscaled_y_test)) * 10
 print(scaled_mse)
 print(real_mse)
 
-
+model.save(MODEL_SAVE_NAME)
+print("saved")
 
 
 
@@ -96,13 +99,16 @@ end = -1
 real = plt.plot(unscaled_y_test[start:end], label='real')
 pred = plt.plot(y_test_predicted[start:end], label='predicted')
 
+
+
 # real = plt.plot(unscaled_y[start:end], label='real')
 # pred = plt.plot(y_predicted[start:end], label='predicted')
-
-model.save(MODEL_SAVE_NAME)
-print("saved")
 
 plt.gcf().set_size_inches(11, 5, forward=True)
 plt.legend(['Real', 'Predicted'])
 plt.show()
 
+
+real = plt.plot(unscaled_y_test[-222:-1], label='real')
+pred = plt.plot(y_test_predicted[-222:-1], label='predicted')
+plt.show()
