@@ -47,11 +47,12 @@ if LOAD_MODEL_FROM_FILE:
 else:
     lstm_input = Input(shape=(history_points, 4), name='lstm_input')
 
-    x = LSTM(50, name='lstm_0')(lstm_input)
+    x = LSTM(50, name='lstm_0',return_sequences=True)(lstm_input)
     x = Dropout(0.2, name='lstm_dropout_0')(x)
-    x = LSTM(50, name='lstm_0')(x)
+    x = LSTM(50, name='lstm_1' )(x)
+
     # x = BatchNormalization()(x)
-    x = Dropout(0.2, name='lstm_dropout_0')(x)
+    x = Dropout(0.2, name='lstm_dropout_1')(x)
     # x = BatchNormalization()(x)
     # x = LSTM(50, name='lstm_0')(lstm_input)
     # x = Dropout(0.2, name='lstm_dropout_0')(x)
