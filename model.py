@@ -8,10 +8,10 @@ from keras.models import Model
 from util import csv_to_dataset, history_points
 
 ###set my settings
-LOAD_MODEL_FROM_FILE = False
-MODEL_LOAD_NAME = "tmp.h5"
+LOAD_MODEL_FROM_FILE = True
+MODEL_LOAD_NAME = "model_full_data_v3_3.h5"
 MODEL_SAVE_NAME = "tmp1.h5"
-EPOCHS = 1
+EPOCHS = 0
 
 
 
@@ -19,7 +19,7 @@ EPOCHS = 1
 ohlcv_histories, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('my.csv')
 
 
-prediction = 111
+prediction = 1
 ohlcv_histories = ohlcv_histories[:-prediction]
 next_day_open_values = next_day_open_values[prediction:]
 
@@ -38,7 +38,10 @@ unscaled_y_test = unscaled_y[n:]
 # print(ohlcv_train.shape)
 # print(ohlcv_test.shape)
 # print(ohlcv_histories.shape)
-# print(ohlcv_histories[0][0])
+print(ohlcv_histories[0][0])
+print(ohlcv_histories[100][0])
+print(ohlcv_histories[1000][0])
+print(ohlcv_histories[10000][0])
 
 ######################################################
 
